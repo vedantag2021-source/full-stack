@@ -34,11 +34,36 @@
             text-decoration:overline;
             color:red;
         }
+        .card{
+            margin:auto;
+
+            width:200px;
+            padding:3%;
+            box-shadow:3px 3px 5px grey;
+
+        }
+        .card__text{
+            font-family:Arial, Helvetica, sans-serif;
+            font-weight:900;
+        }
+        .card__btn__submit{
+            background-color:black;
+            color:white;
+            box-shadow:3px 3px 5px grey;
+            width:100px;
+            height:40px;
+        }
     </style>
 </head>
 <body>
     <p>SPECIFICITY</p>
     <button>CLICK ME!!!</button>
-    <p><a href="#">LINK</a></p>
+    <p><a href="#" class="author">LINK</a></p>
+
+    <div class="card">
+        <img class="card__img" src="https://picsum.photos/id/237/200/300"/>
+        <p class="card__text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+        <button class="card__btn__submit">SUBMIT</button>
+    </div>
 </body>
 </html>
