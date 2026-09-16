@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+.heading{
+    @apply text-3xl font-bold text-gray-800 mb-4 bg-coffee-roasted text-center;
+}
+@theme{
+    --color-coffee-roasted: #4B3621;
+}
+@custom-variant dark (&:where(.dark, .dark *));
