@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopKart — Product Catalogue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ Design tokens ============ */
+  :root{
+    --primary:   #2563EB;
+    --sale:      #DC2626;
+    --heading:   #111827;
+    --body:      #687280;
+    --bg:        #F8FAFC;
+    --border:    #E5E7EB;
+    --rating:    #F59E0B;
+    --white:     #FFFFFF;
+    --card-w:    260px;
+    --gap:       24px;
+    --sidebar-w: 240px;
+    --radius:    10px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    font-family:'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--body);
+    font-size:14px;
+    font-weight:400;
+  }
+
+  a { color:inherit; text-decoration:none; }
+  button { font-family:inherit; cursor:pointer; border:none; }
+
+  /* ============ Top navbar ============ */
+  .navbar{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    background:var(--white);
+    border-bottom:1px solid var(--border);
+    padding:14px 24px;
+    position: sticky;
+    top:0;
+    z-index:20;
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    font-size:18px;
+    color:var(--heading);
+    white-space:nowrap;
+  }
+  .logo-mark{
+    width:26px; height:26px; border-radius:7px;
+    background: var(--primary);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:14px; font-weight:700;
+  }
+  .search{
+    flex:1;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:9px 14px;
+    max-width:520px;
+  }
+  .search input{
+    border:none; background:transparent; outline:none;
+    width:100%; font-size:14px; color:var(--heading); font-family:inherit;
+  }
+  .search svg{ flex-shrink:0; color:var(--body); }
+  .nav-icons{ display:flex; align-items:center; gap:18px; margin-left:auto; }
+  .nav-icons button, .nav-icons .hamburger{
+    background:none; color:var(--heading); display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+  .cart-count{
+    position:absolute; top:-6px; right:-8px;
+    background:var(--primary); color:#fff; font-size:10px; font-weight:600;
+    width:16px; height:16px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .hamburger{ display:none; }
+
+  /* ============ Breadcrumb ============ */
+  .breadcrumb{
+    max-width:1280px;
+    margin:0 auto;
+    padding:16px 24px 0;
+    font-size:13px;
+    color: var(--body);
+  }
+  .breadcrumb a { color: var(--primary); font-weight:500; }
+
+  /* ============ Layout shell ============ */
+  .shell{
+    max-width:1280px;
+    margin:0 auto;
+    padding:16px 24px 60px;
+    display:flex;
+    gap:var(--gap);
+    align-items:flex-start;
+  }
+
+  /* ============ Sidebar (desktop) ============ */
+  .sidebar{
+    width: var(--sidebar-w);
+    flex-shrink:0;
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius: var(--radius);
+    padding:20px;
+  }
+  .sidebar h3{
+    font-size:14px; font-weight:600; color:var(--heading);
+    margin:0 0 12px;
+  }
+  .filter-group{ margin-bottom:22px; }
+  .filter-group:last-of-type{ margin-bottom:20px; }
+  .filter-option{
+    display:flex; align-items:center; gap:8px;
+    font-size:13.5px; color: var(--body);
+    margin-bottom:10px;
+  }
+  .filter-option input{ accent-color: var(--primary); width:14px; height:14px; }
+  .apply-btn{
+    width:100%;
+    background:var(--primary);
+    color:#fff;
+    font-weight:600;
+    font-size:14px;
+    padding:10px;
+    border-radius:8px;
+  }
+  .apply-btn:hover{ background:#1d4fd1; }
+
+  /* ============ Mobile / tablet filter bar ============ */
+  .filter-bar{
+    display:none;
+    gap:12px;
+    margin-bottom:16px;
+  }
+  .filter-bar button{
+    flex:1;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:9px;
+    font-size:13.5px;
+    color:var(--heading);
+    font-weight:500;
+  }
+
+  /* ============ Product area ============ */
+  .product-area{ flex:1; min-width:0; }
+  .toolbar{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:16px;
+  }
+  .result-count{ font-size:14px; color:var(--body); }
+  .sort{
+    display:flex; align-items:center; gap:8px;
+    font-size:13.5px; color:var(--heading);
+    border:1px solid var(--border);
+    background:var(--white);
+    border-radius:8px;
+    padding:8px 12px;
+  }
+  .sort select{ border:none; outline:none; background:transparent; font-family:inherit; font-size:13.5px; color:var(--heading); }
+
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--gap);
+  }
+
+  /* ============ Product card ============ */
+  .card{
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius: var(--radius);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    transition: box-shadow .15s ease, border-color .15s ease;
+  }
+  .card:hover{ box-shadow: 0 4px 18px rgba(17,24,39,0.07); border-color:#d7dce3; }
+
+  .card-media{
+    position:relative;
+    aspect-ratio: 4 / 3;
+    background:#eef1f5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .card-media img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+
+  .badge{
+    position:absolute; top:10px; left:10px;
+    font-size:11px; font-weight:600; color:#fff;
+    padding:3px 9px;
+    border-radius:5px;
+    letter-spacing:.2px;
+    z-index:2;
+  }
+  .badge.sale{ background:var(--sale); }
+  .badge.new{ background:#059669; }
+
+  .wish{
+    position:absolute; top:10px; right:10px;
+    width:28px; height:28px; border-radius:50%;
+    background:rgba(255,255,255,0.9);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--body);
+    z-index:2;
+  }
+  .wish:hover{ color: var(--sale); }
+
+  .card-body{
+    padding:14px 14px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    flex:1;
+  }
+  .category{
+    font-size:13px; font-weight:400; color: var(--body);
+  }
+  .title{
+    font-size:16px; font-weight:600; color: var(--heading);
+    line-height:1.3;
+  }
+  .price-row{ display:flex; align-items:baseline; gap:8px; }
+  .price{ font-size:20px; font-weight:700; color: var(--heading); }
+  .old-price{ font-size:14px; font-weight:400; color: var(--body); text-decoration:line-through; }
+  .rating{ display:flex; align-items:center; gap:5px; font-size:13px; color:var(--body); }
+  .stars{ color: var(--rating); letter-spacing:1px; font-size:12px; }
+
+  .add-btn{
+    margin-top:8px;
+    width:100%;
+    background:var(--primary);
+    color:#fff;
+    font-size:14px;
+    font-weight:600;
+    padding:10px;
+    border-radius:8px;
+  }
+  .add-btn:hover{ background:#1d4fd1; }
+
+  /* ============ Responsive breakpoints ============ */
+  /* Tablet: 640px – 1023px → sidebar collapses to filter bar, 2-col grid */
+  @media (max-width: 1023px){
+    .sidebar{ display:none; }
+    .filter-bar{ display:flex; }
+    .grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+  }
+
+  /* Mobile: < 640px → hamburger nav, 1-col grid */
+  @media (max-width: 639px){
+    .navbar{ padding:12px 16px; }
+    .search{ display:none; }
+    .hamburger{ display:flex; }
+    .logo span{ display:inline; }
+    .breadcrumb{ display:none; }
+    .shell{ padding:12px 16px 40px; }
+    .grid{ grid-template-columns: 1fr; }
+    .toolbar{ flex-wrap:wrap; gap:10px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ Navbar ============ -->
+  <header class="navbar">
+    <button class="hamburger" aria-label="Menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="logo"><span class="logo-mark">S</span><span>ShopKart</span></div>
+    <div class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search for products...">
+    </div>
+    <div class="nav-icons">
+      <button aria-label="Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span class="cart-count">2</span>
+      </button>
+      <button aria-label="Account">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ Breadcrumb ============ -->
+  <div class="breadcrumb"><a href="#">Electronics</a> &nbsp;›&nbsp; Laptops</div>
+
+  <div class="shell">
+
+    <!-- ============ Sidebar filters (desktop) ============ -->
+    <aside class="sidebar">
+      <div class="filter-group">
+        <h3>Category</h3>
+        <label class="filter-option"><input type="checkbox" checked> Laptops</label>
+        <label class="filter-option"><input type="checkbox"> Desktops</label>
+        <label class="filter-option"><input type="checkbox"> Tablets</label>
+        <label class="filter-option"><input type="checkbox"> Accessories</label>
+      </div>
+      <div class="filter-group">
+        <h3>Price Range</h3>
+        <label class="filter-option"><input type="checkbox"> ₹0 – ₹25,000</label>
+        <label class="filter-option"><input type="checkbox"> ₹25,000 – ₹50,000</label>
+        <label class="filter-option"><input type="checkbox"> ₹50,000 – ₹75,000</label>
+        <label class="filter-option"><input type="checkbox"> ₹75,000+</label>
+      </div>
+      <div class="filter-group">
+        <h3>Brand</h3>
+        <label class="filter-option"><input type="checkbox"> Dell</label>
+        <label class="filter-option"><input type="checkbox"> HP</label>
+        <label class="filter-option"><input type="checkbox"> Lenovo</label>
+        <label class="filter-option"><input type="checkbox"> Apple</label>
+      </div>
+      <button class="apply-btn">Apply Filters</button>
+    </aside>
+
+    <!-- ============ Product area ============ -->
+    <main class="product-area">
+
+      <!-- Filter bar for tablet / mobile -->
+      <div class="filter-bar">
+        <button>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/></svg>
+          Filters
+        </button>
+        <button>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="17" y2="12"/><line x1="3" y1="18" x2="13" y2="18"/></svg>
+          Sort
+        </button>
+      </div>
+
+      <div class="toolbar">
+        <span class="result-count">Showing 12 results</span>
+        <div class="sort">
+          Sort by:
+          <select>
+            <option>Popularity</option>
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
+            <option>Rating</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ============ Product grid ============ -->
+      <div class="grid" id="productGrid">
+        <!-- Cards are generated by JS from the PRODUCTS array below -->
+      </div>
+    </main>
+  </div>
+
+<script>
+  // ============ Product data ============
+  // Edit this array to change names, prices, ratings, or the image path.
+  // Each "img" points to a file in the images/ folder next to this HTML file.
+  const PRODUCTS = [
+    { name:"Dell Inspiron 15",  category:"Laptops", price:45990, oldPrice:60990, rating:4.5, reviews:"1.2k", badge:"sale", img:"images/dell-inspiron-15.svg" },
+    { name:"HP Pavilion",       category:"Laptops", price:52990, oldPrice:60990, rating:4.3, reviews:"892",  badge:"new",  img:"images/hp-pavilion.svg" },
+    { name:"Lenovo IdeaPad",    category:"Laptops", price:38990, oldPrice:null,  rating:4.2, reviews:"654",  badge:"",     img:"images/lenovo-ideapad.svg" },
+    { name:"MacBook Air M2",    category:"Laptops", price:90990, oldPrice:99990, rating:4.8, reviews:"1.5k", badge:"",     img:"images/macbook-air-m2.svg" },
+    { name:"ASUS Vivobook",     category:"Laptops", price:41990, oldPrice:null,  rating:4.4, reviews:"720",  badge:"new",  img:"images/asus-vivobook.svg" },
+    { name:"Dell XPS 13",       category:"Laptops", price:89990, oldPrice:null,  rating:4.6, reviews:"1.4k", badge:"",     img:"images/dell-xps-13.svg" },
+  ];
+
+  const grid = document.getElementById('productGrid');
+
+  function starString(rating){
+    const full = Math.round(rating);
+    return "★★★★★".slice(0, full) + "☆☆☆☆☆".slice(0, 5 - full);
+  }
+
+  function placeholderSVG(label){
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='300'>
+      <rect width='100%' height='100%' fill='#EEF1F5'/>
+      <text x='50%' y='50%' font-family='Inter,sans-serif' font-size='16' fill='#9AA4B2' text-anchor='middle' dy='.3em'>${label}</text>
+    </svg>`;
+    return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+  }
+
+  function buildCard(product, index){
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const badgeHTML = product.badge
+      ? `<span class="badge ${product.badge}">${product.badge === 'sale' ? 'SALE' : 'NEW'}</span>`
+      : '';
+
+    const priceHTML = product.oldPrice
+      ? `<span class="price">₹${product.price.toLocaleString('en-IN')}</span><span class="old-price">₹${product.oldPrice.toLocaleString('en-IN')}</span>`
+      : `<span class="price">₹${product.price.toLocaleString('en-IN')}</span>`;
+
+    card.innerHTML = `
+      <div class="card-media">
+        ${badgeHTML}
+        <div class="wish">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+        </div>
+        <img src="${product.img || placeholderSVG(product.name)}" alt="${product.name}">
+      </div>
+      <div class="card-body">
+        <span class="category">${product.category}</span>
+        <span class="title">${product.name}</span>
+        <div class="price-row">${priceHTML}</div>
+        <div class="rating"><span class="stars">${starString(product.rating)}</span> ${product.rating} (${product.reviews})</div>
+        <button class="add-btn">Add to Cart</button>
+      </div>
+    `;
+    return card;
+  }
+
+  function render(){
+    grid.innerHTML = '';
+    PRODUCTS.forEach((p, i) => grid.appendChild(buildCard(p, i)));
+  }
+
+  render();
+
+  // ============ Add to cart feedback ============
+  grid.addEventListener('click', (e) => {
+    if (e.target.matches('.add-btn')){
+      const original = e.target.textContent;
+      e.target.textContent = 'Added ✓';
+      setTimeout(() => { e.target.textContent = original; }, 1000);
+    }
+  });
+</script>
+</body>
+</html>
